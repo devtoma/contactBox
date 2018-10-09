@@ -1,2 +1,18 @@
 
 \.idea/
+
+addressBook/static/css/
+
+addressBook/static/js/
+
+addressBook/templates/addressBook/index\.html
+
+addressBook/__pycache__/
+
+contactBox/__pycache__/
+
+contactBox/static/css/
+
+contactBox/static/js/
+
+contactBox/templates/contactBox/index\.html

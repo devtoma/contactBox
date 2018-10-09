@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'addressBook',
-    'contactBox.static.css',
+    'addressBook.static.css',
 ]
 
 MIDDLEWARE = [
