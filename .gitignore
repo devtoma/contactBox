@@ -18,3 +18,4 @@ contactBox/static/js/
 contactBox/templates/contactBox/index\.html
 
 templates/
+addressBook/migrations/__pycache__/
