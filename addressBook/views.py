@@ -498,7 +498,7 @@ class EditContact(View):
         button = self.request.POST.get("action")
 
         if self.request.POST.get("action") == 1:
-            return HttpResponse("Zapisuej goscia")
+            return HttpResponse("Zapisuj goscia")
         else:
 
             return HttpResponse("Powrot")
