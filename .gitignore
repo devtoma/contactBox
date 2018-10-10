@@ -16,3 +16,5 @@ contactBox/static/css/
 contactBox/static/js/
 
 contactBox/templates/contactBox/index\.html
+
+templates/

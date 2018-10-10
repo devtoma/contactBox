@@ -20,7 +20,7 @@ class Address(models.Model):
     city = models.CharField(max_length=24)
     street = models.CharField(max_length=32)
     house_no = models.SmallIntegerField()  # na później: rozstrzygnąć kwestię numerów np. 15c
-    flat_no = models.SmallIntegerField()
+    flat_no = models.SmallIntegerField(null=True)
     resident = models.ForeignKey(Person, on_delete=models.DO_NOTHING)
 
 
