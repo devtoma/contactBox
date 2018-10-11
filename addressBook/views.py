@@ -15,8 +15,35 @@ from addressBook.models import Person, PhoneNumber, Address, EmailAddress, Group
 @method_decorator(csrf_exempt, name='dispatch')
 class ContactList(View):
 
-    @staticmethod
-    def show_contact_list(order=0):
+    def get_list(self, type=0):
+
+        __html = ''
+        contact_list = Person.objects.order_by('surname', 'name')  # wyciągam z bazy uporządkowaną listę
+
+        if type == 0:  #lista nazwisk z przyciskami z boku - edycja, usuń
+            for i in contact_list:
+                __html = __html + f""" <fieldset class="position-site"><legend>Kontakty</legend>       
+                    <button class="name-surname" name="cinfo" value="{i.id}">{i.name} {i.surname}</button>
+                    <div class="buttons-div">
+                        <button class="button" type="submit" name="edit" value="{i.id}">Edycja</button>
+                        <button class="button" type="submit" name="delete" value="{i.id}">Usuń</button></div>
+                    <div class="clearfix"></div>                  
+                """
+        elif type == 1:
+            #contact_list = Person.objects.filter(group__member="").order_by('surname', 'name')
+            for i in contact_list:
+                __html = __html + f"""<fieldset class="position-site"><legend>{i}</legend>        
+                    <button class="name-surname" name="cinfo" value="{i.id}">{i.name} {i.surname}</button>
+                    <div class="buttons-div">
+                        <button class="button" type="submit" name="delete" value="{i.id}">Usuń z grupy</button></div>
+                    <div class="clearfix"></div>                  
+                """
+        return __html
+
+    def show_contact_list(self, order=0):
+
+        self.order = order
+
         __html_start = """
             <html><head>
                   
@@ -123,8 +150,8 @@ class ContactList(View):
                         }                  
                     </style>
                 </head><body>
-              <form action="#" method="POST">
-                <fieldset class="position-site"><legend>Kontakty</legend>
+              <form action="#" method="POST"><div style="float: left;">
+                
         """
 
         __html_start2 = """
@@ -244,29 +271,29 @@ class ContactList(View):
                     <button class="button" type="submit" name="event" value="groups">
                       Grupy</button>
                   </div>
-                </fieldset>
+                </fieldset></div>
               </form>
             </body></html>
         """
 
         __html = ''
-        if order == 0:
-            contact_list = Person.objects.order_by('surname', 'name')
+        if self.order == 0:
+            contact_list = self.get_list()
             for i in contact_list:
-                __html = __html + f"""        
-                    <button class="name-surname" name="cinfo" value="{i.id}">{i.name} {i.surname}</button>
-                    <div class="buttons-div">
-                        <button class="button" type="submit" name="edit" value="{i.id}">Edycja</button>
-                        <button class="button" type="submit" name="delete" value="{i.id}">Usuń</button></div>
-                    <div class="clearfix"></div>                  
-                """
-            return __html_start + __html + __html_end
-        elif order == 1:
-            return __html_start + __html + __html_end
+                __html += i
+
+            return __html_start,__html, __html_end
+        elif self. order == 1:
+
+            return __html_start, __html, __html_end
         elif order == 2: pass
 
     def get(self, request):
-        return HttpResponse(ContactList.show_contact_list())
+        response = ""
+        __html = self.show_contact_list()
+        for i in __html:
+            response += i
+        return HttpResponse(response)
 
 
     def post(self, request):
@@ -274,7 +301,7 @@ class ContactList(View):
             return HttpResponse("Edytuję...")
         elif self.request.POST.get('delete'):
             __delete = self.request.POST.get('delete')
-            box = f"""
+            confirm_box = f"""
                 <form action="" method="post">
                   <div style='margin-top: 100px; margin-left: 200px;'>
                      <h3 style='font-familly: arial, san-serif; font-size: 22px; font-variant: small-caps;'>Na pewno chcesz skasować?</h3>
@@ -364,19 +391,17 @@ class ContactList(View):
                 </form></body><html>
                 </div>
             """
-            return HttpResponse(box)
+            return HttpResponse(confirm_box)
         elif self.request.POST.get('confirmation') == "Potwierdź":
             __delete = self.request.POST.get("deleteId")
-
             Person.objects.get(pk=__delete).delete()
-            __after_delete = self.show_contact_list()
-            return HttpResponse(__after_delete)
+            return HttpResponse(self.show_contact_list())
         elif self.request.POST.get('cinfo'):
             return HttpResponse('Info czeka na przekierowanie...')
         elif self.request.POST.get('event') == 'groups':
             return HttpResponseRedirect('/Group')
         else:
-            return HttpResponse("Czekam na Widok Dodawania Rekordu.")
+            return HttpResponse("/edit")
 
 
 #@method_decorator(csrf_exempt, name='dispatch')
@@ -384,19 +409,24 @@ class ContactGroupsList(ContactList):
 
 
     def get(self, request):
-        result = ''
+        __html = self.show_contact_list()
+        response = ""
+
+
+        __html_start = self
         for i in range(6):
             if i % 3 == 0:
                 pass
 
-            result += ContactList.show_contact_list()
-        return HttpResponse(result)
+
+        return HttpResponse("")
 
     def post(self, request):
          return HttpResponse("Czekam na Widok Dodawania Rekordu.")
 
 @method_decorator(csrf_exempt, name='dispatch')
 class EditContact(View):
+    # made by @TomW
     # dodac placefolder wszystki, placholder zaminic w pola domyslne inputa 2) dodac selekty rozwjane emial i telefon 3) zapis do bazy przyciski
     @staticmethod
     def show_contact_edit(id):
@@ -498,7 +528,7 @@ class EditContact(View):
         button = self.request.POST.get("action")
 
         if self.request.POST.get("action") == 1:
-            return HttpResponse("Zapisuej goscia")
+            return HttpResponse("Zapisuj goscia")
         else:
 
             return HttpResponse("Powrot")
