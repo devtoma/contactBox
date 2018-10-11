@@ -22,8 +22,10 @@ from addressBook.views import ContactList, ContactGroupsList
 
 urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
-    re_path(r'^ContactsList$', ContactList.as_view()
+    re_path(r'^ContactsList/$', ContactList.as_view()
             ),
-    re_path(r'^Group$', ContactGroupsList.as_view()
+    re_path(r'^Group/$', ContactGroupsList.as_view()
+            ),
+    re_path(r'^Edit/(?P<end>(\d)+)/$', ContactGroupsList.as_view()
             ),
 ]
