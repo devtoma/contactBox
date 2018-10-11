@@ -1,0 +1,106 @@
+/* Dzięki klasie lista nazwisk wygląda jak lista stringów, maskuje fakt, że to butony. Alternatywnie mogłem użyć ostylowanego taga <a> */
+.name-surname {
+    float: left;
+    width: 250px;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: black;
+    text-decoration: none
+     /*optional*/
+    font-family:arial,sans-serif; /*input has OS specific font-family*/
+      background:none;
+     border:none;
+     padding:0;
+     text-align: left;
+
+}
+
+.name-surname:active {
+     color:gray;
+
+}
+
+/* pokoloruję i powiększę nieco font przy podświetleniu */
+.name-surname:hover{
+      background-color: #eee;
+      color: #555;
+      height: 30px;
+      font-size: 23px;
+}
+
+.buttons-div {
+    float: left;
+    height: 35px;
+    padding-left: 5px;
+}
+
+.bottom-buttons {
+    margin-top: 50px;
+
+}
+
+.position-site {
+    margin-top: 100px;
+    margin-left: 200px;
+    font-size: 20px;
+    font-weight: bold;
+    font-variant: small-caps;
+    padding-top: 20px;
+    display: inline-block;
+}
+.clearfix {
+    clear: both;
+}
+
+.button:hover {
+
+   color: #ddd;
+   background-color: #555;
+}
+
+/* śliczne przyciski, fajnie działające */
+.button {
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+    padding: 6px 20px;
+    margin: 0;
+    cursor: pointer;
+    border: 1px solid #bbb;
+    overflow: visible;
+    font: bold 13px arial, helvetica, sans-serif;
+    text-decoration: none;
+    white-space: nowrap;
+    color: #555;
+
+    background-color: #ddd;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,1)), to(rgba(255,255,255,0)));
+    background-image: -webkit-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background-image: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background-image: -ms-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background-image: -o-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background-image: linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+
+    -webkit-transition: background-color .2s ease-out;
+    -moz-transition: background-color .2s ease-out;
+    -ms-transition: background-color .2s ease-out;
+    -o-transition: background-color .2s ease-out;
+    transition: background-color .2s ease-out;
+    background-clip: padding-box; /* Fix bleeding */
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
+    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
+    text-shadow: 0 1px 0 rgba(255,255,255, .9);
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
