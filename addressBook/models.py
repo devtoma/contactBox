@@ -21,20 +21,20 @@ class Address(models.Model):
     street = models.CharField(max_length=32)
     house_no = models.SmallIntegerField()  # na później: rozstrzygnąć kwestię numerów np. 15c
     flat_no = models.SmallIntegerField(null=True)
-    resident = models.ForeignKey(Person, on_delete=models.DO_NOTHING)
+    resident = models.ForeignKey(Person, on_delete=models.CASCADE)
 
 
 class PhoneNumber(models.Model):
 
     number = models.CharField(max_length=15)
     category = models.SmallIntegerField(choices=CATEGORIES)
-    owner = models.ForeignKey(Person, on_delete=models.DO_NOTHING)
+    owner = models.ForeignKey(Person, on_delete=models.CASCADE)
 
 
 class EmailAddress(models.Model):
     address = models.CharField(max_length=32)
     category = models.SmallIntegerField(choices=CATEGORIES)
-    owner = models.ForeignKey(Person, on_delete=models.DO_NOTHING)
+    owner = models.ForeignKey(Person, on_delete=models.CASCADE)
 
 
 class Group(models.Model):

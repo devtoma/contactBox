@@ -15,12 +15,13 @@ from addressBook.models import Person, PhoneNumber, Address, EmailAddress, Group
 @method_decorator(csrf_exempt, name='dispatch')
 class ContactList(View):
 
-    def set_list_taste(self, type=0):
+    def set_list_taste(self, group_view=1, type_view=0):
 
         __html = ""
-        contact_list = Person.objects.order_by("surname", "name")  # wyciągam z bazy uporządkowaną listę
 
-        if type == 0:  #lista nazwisk z przyciskami z boku - edycja, usuń
+        contact_list = Person.objects.order_by("surname", "name")  # wyciągam z bazy uporządkowaną listę
+        if type_view == 0:  #lista nazwisk z przyciskami z boku - edycja, usuń
+
             for i in contact_list:
                 __html += f"""
                     <button class="name-surname" name="cinfo" value="{i.id}">{i.name} {i.surname}</button>
@@ -29,23 +30,33 @@ class ContactList(View):
                         <button class="button" type="submit" name="delete" value="{i.id}">Usuń</button></div>
                     <div class="clearfix"></div>                  
                 """
-            __html = """<fieldset class="position-site"><legend>Kontakty</legend>""" + __html
-        elif type == 1:
-            #contact_list = Person.objects.filter(group__member="").order_by('surname', 'name')
-            for i in contact_list:
+            __html = """<fieldset class="position-site"><legend>Kontakty</legend>""" + __html + """ 
+                        <div class=bottom-buttons>
+                            <button class="button" type="submit" name="event" value="add">
+                                Dodaj kontakt</button>
+                            <button class="button" type="submit" name="event" value="groups">
+                                Grupy</button>
+                        </div>"""
+        elif type_view == 1:
+            __group = Group.objects.get(pk=group_view)  # wyciągam z bazy  listę wszystkie wpisy dla danej grupy
+            group_list = __group.member.all()  # tworzę listę osób przypisanych do grupy
+
+            for i in group_list:
                 __html += f"""      
                     <button class="name-surname" name="cinfo" value="{i.id}">{i.name} {i.surname}</button>
                     <div class="buttons-div">
                         <button class="button" type="submit" name="delete" value="{i.id}">Usuń z grupy</button></div>
                     <div class="clearfix"></div>                  
                 """
-            __html = f"""<fieldset class="position-site" ><legend>{i}</legend>""" + __html
+            __html = f"""<fieldset class="position-site" ><legend>{Group.objects.get(pk=group_view).name}</legend>""" \
+                     + __html
         return __html
 
+    def set_contact_list(self, group=1, type_view=0):
 
+        self.type_view = type_view
+        self.group_view = group
 
-    def set_contact_list(self, order=0):
-        self.order = order
         __html_start = """
             <html><head>
                   
@@ -158,29 +169,22 @@ class ContactList(View):
                         }                  
                     </style>
                 </head><body>
-              <form action="#" method="POST"><div style="float: left;">       
+              <form action="#" method="POST"><div style="float: left;">     
         """
         __html_end = """
-                  <div class=bottom-buttons>
-                    <button class="button" type="submit" name="event" value="add">
-                      Dodaj kontakt</button>
-                    <button class="button" type="submit" name="event" value="groups">
-                      Grupy</button>
-                  </div>
                 </fieldset></div>
               </form>
             </body></html>
         """
-        __html = self.set_list_taste(self.order)
+        __html = self.set_list_taste(self.group_view, self.type_view)
         return " ".join((__html_start, __html, __html_end))
 
     def get(self, request):
         return HttpResponse(self.set_contact_list())
 
-
     def post(self, request):
         if self.request.POST.get('edit'):
-            return HttpResponse("Edytuję...")
+            return HttpResponseRedirect("/edit.")
         elif self.request.POST.get('delete'):
             __delete = self.request.POST.get('delete')
             confirm_box = f"""
@@ -298,8 +302,9 @@ class ContactGroupsList(ContactList):
 
     def get(self, request):
         __html = ''
-        for i in range(6):
-            __html += self.set_contact_list(1)
+        __group_list = Group.objects.all().order_by('name')
+        for i in __group_list:
+            __html += self.set_contact_list(i.id, 1)
         return HttpResponse(__html)
 
     def post(self, request):
@@ -370,7 +375,7 @@ class EditContact(View):
         names = ""
         member_list = placeholder.group_set.all()  # wszystkie nazwy grup przypisanych do persony(u mnie presony)
 
-        print(member_list.values()[0]['name'])
+        #print(member_list.values()[0]['name'])
         for i in member_list:
             if names == "":
                 names += i.name
