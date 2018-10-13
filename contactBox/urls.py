@@ -18,7 +18,7 @@ from django.urls import path
 from django.views import View
 from django.contrib import admin
 from django.urls import *
-from addressBook.views import ContactList, ContactGroupsList
+from addressBook.views import ContactList, ContactGroupsList, EditContact
 
 urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
@@ -26,6 +26,6 @@ urlpatterns = [
             ),
     re_path(r'^Group/$', ContactGroupsList.as_view()
             ),
-    re_path(r'^Edit/(?P<end>(\d)+)/$', ContactGroupsList.as_view()
+    re_path(r'^Edit/(?P<id>(\d)+)/$', EditContact.as_view()
             ),
 ]

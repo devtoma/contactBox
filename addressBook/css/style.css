@@ -63,7 +63,7 @@
 /* śliczne przyciski, fajnie działające */
 .button {
     display: inline-block;
-    *display: inline;
+
     zoom: 1;
     padding: 6px 20px;
     margin: 0;
