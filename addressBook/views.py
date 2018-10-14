@@ -12,7 +12,8 @@ from addressBook.models import Person, PhoneNumber, Address, EmailAddress, Group
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ContactList(View):
-    button_save = """
+    confirmation_label = "Potwierdź"
+    button_save = f"""
                     <button style='
                     display: inline-block;                      
                     zoom: 1;
@@ -55,7 +56,7 @@ class ContactList(View):
                         -ms-user-select: none;
                         user-select: none;' onmouseover="this.style.backgroundColor = '#555'"; 
                         onmouseout="this.style.backgroundColor = '#ddd';" type="submit" name="confirmation" 
-                        value="yes">Potwierdź</button>                    
+                        value="yes">{confirmation_label}</button>                    
              
                     <button style='
                             display: inline-block;                      
@@ -102,6 +103,7 @@ class ContactList(View):
                              onclick="window.history.back();" 
                             type="button">Wróć</button>
                 """
+
     def set_list_taste(self, group_view=1, type_view=0):
         __html = ""
         if type_view == 0:  #lista nazwisk z przyciskami z boku - edycja, usuń
@@ -265,8 +267,9 @@ class ContactList(View):
         return HttpResponse(self.set_contact_list_view())
 
     def post(self, request):
-        __id = self.request.POST.get('edit')
+
         if self.request.POST.get('edit'):
+            __id = self.request.POST.get('edit')
             return HttpResponseRedirect('/Edit/' + __id + '/')
         elif self.request.POST.get('delete'):
             __delete = self.request.POST.get('delete')
@@ -285,7 +288,8 @@ class ContactList(View):
             Person.objects.get(pk=__delete).delete()
             return HttpResponse(self.show_contact_list())
         elif self.request.POST.get('cinfo'):
-            return HttpResponse('Info czeka na przekierowanie...')
+            __id = self.request.POST.get('cinfo')
+            return HttpResponseRedirect('/Info/' + __id + '/')
         elif self.request.POST.get('event') == 'groups':
             return HttpResponseRedirect('/Group')
         else:
@@ -313,11 +317,7 @@ class EditContact(View):
     # def __iter__(self):
     #     return iter((self.name, self.age, self.gender))
 
-    # @staticmethod
-    # def validate_records(item, type=0):
-    #     if type == 0 and item:
-    #        return item
-    #     elif type == 0 and item :
+
 
     # metoda zmienia wybrany klucz QuerrySet w listę. Np. nazwy grup wyciąga ze słowników Seta
     # i tworzy listę z przypisanymi nazwami. patrz utworzenie listy groups w set_contact_info
@@ -334,15 +334,10 @@ class EditContact(View):
         __contact_set = {}
 
         # tworzę stringa do grup, to do wersji pierwszej. potem wstawię multiselect boxa i nie będzie potrzebne
-
         user_groups = self.__contact.group_set.values()
         groups = self.convert_queryfield_to_list(user_groups, 'name')
 
-
-        print(groups)
         if id != 0:  # set of data fo edit view
-
-
             __contact_set = {
                 # atrybuty modelu Person:
                 'name': self.__contact.name,
@@ -368,14 +363,14 @@ class EditContact(View):
                 # w set_contact_edit_view pozwoli mi zarządzać także buttonami w zależności od potrzeb
             }
 
-        elif id == 2: # tryb info
+        elif id == 2:  # tryb info
             __contact_set['taste'] = 'INFO'  # poza buttonami 'zapisz', 'wróć' widok INFO będzie
             # taki sam jak widoku edit. inputy będą 'readonly'. imho będzie łatwiej i spójniej
             # ux-owo z innymi komponentami aplikacji
 
         return __contact_set
 
-    def set_contact_edit_view(self, id, type_view=0):  # id - by wyciągnąć konkretny kontakt, type_view pozwoli dobrać zestaw w zalezności od widoku
+    def set_contact_edit_view(self, id, type_view=''):  # id - by wyciągnąć konkretny kontakt, type_view pozwoli dobrać zestaw w zalezności od widoku
 
         """
         najpierw tworzę listę pustych łańcuchów. dzięki nim rozpoznam stany kategorii e-mail oraz telefonu. jeden
@@ -398,6 +393,8 @@ class EditContact(View):
         # tworzę tu stringa, którego na razie wrzucę w formularz Grupy
 
         input_style = '<input style="height: 33px;'
+        # !!!!specjalnie nie zamykam podwójnym cudzysem, zamykający cudzys jest przy każdym
+        # stylowanym elemencie w html-ce. dzięki temu mogę dodawać atrybuty stylów, także w html-ce
         label_style = '<label style="height: 33px; font-size: 22px; font-weight: bold; font-variant: small-caps;'
         # przygotowuję html od lekkiego ostylowania. w html-ce 'zaszyję' fragmenty stringa stylami inline
         # to tylko ostylowanie, nie wpłynie na działanie programu. podmieniam jedynie stringi
@@ -408,20 +405,22 @@ class EditContact(View):
             <html><body><form style="margin-top: 100px; margin-left: 200px" action="/Edit/{id}" method="POST">
                 <p><label {label_style}">
                   Imię:
-                  {input_style} width: 130px" type="text" name="user_name" value="{__contact_info['name']}" >
+                  {input_style} width: 130px" type="text" name="user_name" value="{__contact_info['name']}" {type_view}>
                   Nazwisko:
-                  {input_style} width: 250px" type="text" name="user_surname" value="{__contact_info['surname']}">
+                  {input_style} width: 250px" type="text" name="user_surname"
+                    {type_view}  value="{__contact_info['surname']}">
                 </label></p>   
             
                 <p><label {label_style}">
                   Opis:
-                  {input_style} width: 487px" type="text" name="description" value="{__contact_info['description']}">   
+                  {input_style} width: 487px" type="text" name="description"
+                    {type_view} value="{__contact_info['description']}">   
                 </label></p>          
                 <p><label {label_style}">Telefon:
                   {input_style} width: 295px;" type="tel" name="phone_number" value="{__contact_info['phone'][0]}" 
-                  pattern='(\+(\d{1})*\d{1})*\s*\d{2,3}\s*\d{2,3}\s*\d{2,3}\s*\d{2,3}'>
+                  pattern="(\+(\d{1})*\d{1})*\s*\d{2,3}\s*\d{2,3}\s*\d{2,3}\s*\d{2,3}"  {type_view}>
                 </label>
-                <select style='width: 150px; padding: 6px 20px; margin: 0; border: 1px solid #bbb;
+                <select {type_view}  style='width: 150px; padding: 6px 20px; margin: 0; border: 1px solid #bbb;
                     overflow: visible; font: 13px arial, helvetica, sans-serif;
                     text-decoration: none; white-space: nowrap; color: #555;'>
                   <option value='private' name="phone_cat_1" {__if_selected[0]}>{CATEGORIES[0][1]}</option>
@@ -430,9 +429,9 @@ class EditContact(View):
                   <option value='secret' name="phone_cat_4" {__if_selected[3]}>{CATEGORIES[3][1]}</option>
                 </select></p>         
                 <p><label {label_style}">E-mail:
-                  {input_style} width: 310px;" type="email" name="user_email" value="{__contact_info['email'][0]}">
+                  {input_style} width: 310px;" type="email" name="user_email" value="{__contact_info['email'][0]}"  {type_view}>
                 </label>
-                <select style='width: 150px; padding: 6px 20px; margin: 0; border: 1px solid #bbb;
+                <select {type_view} style='width: 150px; padding: 6px 20px; margin: 0; border: 1px solid #bbb;
                     overflow: visible; font: 13px arial, helvetica, sans-serif;
                     text-decoration: none; white-space: nowrap; color: #555;'>
                   <option value="private" name="email_cat_1" {__if_selected[4]}>{CATEGORIES[0][1]}</option>
@@ -443,29 +442,32 @@ class EditContact(View):
                 <fieldset style="width: 510px;"><legend style="font-size: 22px; font-weight: bold; font-variant: small-caps;">Adres:</legend>
                      <p><label {label_style}">
                       Ulica:
-                      {input_style} width: 267px" type="text" name="street" value="{__contact_info['address'][0]}">
+                      {input_style} width: 267px" type="text" name="street" 
+                        value="{__contact_info['address'][0]}" {type_view}>
                       Numer:
-                      {input_style} width: 38px" type="text" name="house_no" value="{__contact_info['address'][1]}">
-                      /
-                      {input_style} width: 38px" type="text" name="flat_no" value="{__contact_info['address'][2]}">
+                      {input_style} width: 38px" type="text" name="house_no"
+                        {type_view} value="{__contact_info['address'][1]}">
+                      {input_style} width: 38px" type="text" name="flat_no" 
+                        {type_view} value="{__contact_info['address'][2]}">
                     </label></p>
                     <p><label {label_style}">Kod
-                       {input_style} width: 82px;" type="text" name="zip" value="00-000"> 
+                       {input_style} width: 82px;" type="text" name="zip" value="00-000" {type_view}> 
                     Miasto:
-                      {input_style} width: 292px;" type="text" name="city" value="{__contact_info['address'][3]}">     
+                      {input_style} width: 292px;" type="text" name="city" 
+                        value="{__contact_info['address'][3]}" {type_view}>     
                 </fieldset>                        
          """
         __html_group = f"""
           <p><label {label_style}">
               Grupy:
-              {input_style} width: 465px;" type="text" name="user_group" value="{groups_string}">
+              {input_style} width: 465px;" type="text" name="user_group" {type_view} value="{groups_string}">
           </label> </p>       
         """
+        ContactList.confirmation_label = "Zapisz"
         __html_end = f"""<p>{ContactList.button_save}</p></form></body></html>
         """
 
         return __html_start + __html_group + __html_end  # przekazujemy gotowy html
-
     def get(self, request, id):
 
         return HttpResponse(self.set_contact_edit_view(id))
@@ -483,3 +485,36 @@ class EditContact(View):
 # jak lepije zapisac numer tel + id ownera,
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class InfoContact(EditContact):
+
+    def get(self, request, id):
+
+        return HttpResponse(self.set_contact_edit_view(id, 'disabled'))
+
+    def post(self, request):
+
+        button = self.request.POST.get("action")
+
+        if self.request.POST.get("action") == 1:
+            return HttpResponse("Zapisuj gościa")
+        else:
+
+            return HttpResponse("Powrót")
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class NewContact(EditContact):
+
+    def get(self, request, id):
+        return HttpResponse(self.set_contact_edit_view(id))
+
+    def post(self, request):
+
+        button = self.request.POST.get("action")
+
+        if self.request.POST.get("action") == 1:
+            return HttpResponse("Zapisuj goscia")
+        else:
+
+            return HttpResponse("Powrot")
