@@ -19,3 +19,7 @@ contactBox/templates/contactBox/index\.html
 
 templates/
 addressBook/migrations/__pycache__/
+
+addressBook/uutilities/__pycache__/
+
+addressBook/migrations/

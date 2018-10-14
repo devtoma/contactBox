@@ -26,7 +26,7 @@ class Address(models.Model):
 
 class PhoneNumber(models.Model):
 
-    number = models.CharField(max_length=15, default='')
+    number = models.CharField(max_length=20, default='')
     category = models.SmallIntegerField(choices=CATEGORIES, default=1)
     owner = models.ForeignKey(Person, on_delete=models.CASCADE)
 
@@ -38,5 +38,5 @@ class EmailAddress(models.Model):
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=15)
+    name = models.CharField(max_length=16)
     member = models.ManyToManyField(Person)

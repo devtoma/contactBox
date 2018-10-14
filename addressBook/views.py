@@ -7,102 +7,13 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from addressBook.models import Person, PhoneNumber, Address, EmailAddress, Group, CATEGORIES
-
+from addressBook.uutilities import *
 # Create your views here.
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ContactList(View):
-    confirmation_label = "Potwierdź"
-    button_save = f"""
-                    <button style='
-                    display: inline-block;                      
-                    zoom: 1;
-                    padding: 6px 20px;
-                    margin: 0;
-                    cursor: pointer;
-                    border: 1px solid #bbb;
-                    overflow: visible;
-                    font: bold 13px arial, helvetica, sans-serif;
-                    text-decoration: none;
-                    white-space: nowrap;
-                    color: #555;
-                    
-                    background-color: #ddd;
-                    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,1)), to(rgba(255,255,255,0)));
-                    background-image: -webkit-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                    background-image: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                    background-image: -ms-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                    background-image: -o-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                    background-image: linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                    
-                    -webkit-transition: background-color .2s ease-out;
-                    -moz-transition: background-color .2s ease-out;
-                    -ms-transition: background-color .2s ease-out;
-                    -o-transition: background-color .2s ease-out;
-                    transition: background-color .2s ease-out;
-                    background-clip: padding-box; /* Fix bleeding */
-                    -moz-border-radius: 3px;
-                    -webkit-border-radius: 3px;
-                    border-radius: 3px;
-                    -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
-                    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
-                    box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
-                    text-shadow: 0 1px 0 rgba(255,255,255, .9);
-                    
-                        -webkit-touch-callout: none;
-                        -webkit-user-select: none;
-                        -khtml-user-select: none;
-                        -moz-user-select: none;
-                        -ms-user-select: none;
-                        user-select: none;' onmouseover="this.style.backgroundColor = '#555'"; 
-                        onmouseout="this.style.backgroundColor = '#ddd';" type="submit" name="confirmation" 
-                        value="yes">{confirmation_label}</button>                    
-             
-                    <button style='
-                            display: inline-block;                      
-                            zoom: 1;
-                            padding: 6px 20px;
-                            margin: 0;
-                            cursor: pointer;
-                            border: 1px solid #bbb;
-                            overflow: visible;
-                            font: bold 13px arial, helvetica, sans-serif;
-                            text-decoration: none;
-                            white-space: nowrap;
-                            color: #555;
-                            
-                            background-color: #ddd;
-                            background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,1)), to(rgba(255,255,255,0)));
-                            background-image: -webkit-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                            background-image: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                            background-image: -ms-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                            background-image: -o-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                            background-image: linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-                            
-                            -webkit-transition: background-color .2s ease-out;
-                            -moz-transition: background-color .2s ease-out;
-                            -ms-transition: background-color .2s ease-out;
-                            -o-transition: background-color .2s ease-out;
-                            transition: background-color .2s ease-out;
-                            background-clip: padding-box; /* Fix bleeding */
-                            -moz-border-radius: 3px;
-                            -webkit-border-radius: 3px;
-                            border-radius: 3px;
-                            -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
-                            -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
-                            box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
-                            text-shadow: 0 1px 0 rgba(255,255,255, .9);
-                            
-                            -webkit-touch-callout: none;
-                            -webkit-user-select: none;
-                            -khtml-user-select: none;
-                            -moz-user-select: none;
-                            -ms-user-select: none;
-                            user-select: none;' onmouseover="this.style.backgroundColor = '#555'"; 
-                            onmouseout="this.style.backgroundColor = '#ddd'; this.color = '#555';"
-                             onclick="window.history.back();" 
-                            type="button">Wróć</button>
-                """
+
+    buttons = button_confirm + button_back
 
     def set_list_taste(self, group_view=1, type_view=0):
         __html = ""
@@ -124,7 +35,9 @@ class ContactList(View):
                     Grupy</button>
                 </div>"""
         elif type_view == 1:
-            __group = Group.objects.get(pk=group_view)  # wyciągam z bazy  listę wszystkie wpisy dla danej grupy (group_view 1-6)
+            # wyciągam z bazy  listę wszystkie wpisy dla danej grupy (group_view od wzwyż)
+            __group = Group.objects.get(pk=group_view)
+
             group_list = __group.member.all()  # tworzę listę osób przypisanych do grupy
 
             for i in group_list:
@@ -139,6 +52,7 @@ class ContactList(View):
         return __html
 
     def set_contact_list_view(self, group=1, type_view=0):
+        #  type_view niepotrzebne, trzeba wykorzystać dziedziczenie
         self.type_view = type_view
         self.group_view = group
         __html_start = """
@@ -276,9 +190,11 @@ class ContactList(View):
             confirm_box = f"""       
                 <html><body><form action="" method="post">
                   <div style='margin-top: 100px; margin-left: 200px;'>
-                     <h3 style='font-familly: arial, san-serif; font-size: 22px; font-variant: small-caps;'>Na pewno chcesz skasować?</h3>
+                     <h3 style='font-familly: arial, san-serif; font-size: 22px; font-variant: small-caps;'>
+                        Na pewno chcesz skasować?
+                     </h3>
                     <input type="hidden" id="deleteId" name="deleteId" value="{__delete}">
-                    {ContactList.button_save}
+                    {self.buttons}
                   </div>
                 </form></body><html>          
             """
@@ -292,8 +208,10 @@ class ContactList(View):
             return HttpResponseRedirect('/Info/' + __id + '/')
         elif self.request.POST.get('event') == 'groups':
             return HttpResponseRedirect('/Group')
+        elif self.request.POST.get('event') == 'add':
+            return HttpResponseRedirect('/Add/0')
         else:
-            return HttpResponse("wywaliło!")
+            return HttpResponse("Coś poszło nie tak!")
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -317,7 +235,7 @@ class EditContact(View):
     # def __iter__(self):
     #     return iter((self.name, self.age, self.gender))
 
-
+    buttons = button_save + button_back  # przyciski na dole widoku. są w module uutilities
 
     # metoda zmienia wybrany klucz QuerrySet w listę. Np. nazwy grup wyciąga ze słowników Seta
     # i tworzy listę z przypisanymi nazwami. patrz utworzenie listy groups w set_contact_info
@@ -335,9 +253,14 @@ class EditContact(View):
 
         # tworzę stringa do grup, to do wersji pierwszej. potem wstawię multiselect boxa i nie będzie potrzebne
         user_groups = self.__contact.group_set.values()
-        groups = self.convert_queryfield_to_list(user_groups, 'name')
 
-        if id != 0:  # set of data fo edit view
+        # przygotowuję string, wyświetlany w polu Grupy. Jeśli nie będzie niczego w bazie, to podstawi pusty string
+        if user_groups:
+            groups = self.convert_queryfield_to_list(user_groups, 'name')
+        else:
+            groups = ""
+
+        if id != 0:  # set of data fo edit view, id = 0 reserved for adding rekord
             __contact_set = {
                 # atrybuty modelu Person:
                 'name': self.__contact.name,
@@ -357,20 +280,18 @@ class EditContact(View):
                             # dodałem kod pocztowy, nieobsługiwany w bazie
                 'groups': groups,
 
-                'taste': "EDIT"
+                'taste': "value"
                 # potrzebuję tej zmiennej, by zarządzać widokami (dodawanie, edycja, wyświetlanie)
-                # przy pomocy jednej html-ki. podzielony łańcuch na __html_start, __html__end
-                # w set_contact_edit_view pozwoli mi zarządzać także buttonami w zależności od potrzeb
+                # dla widoków i edycji ma wartość value - input będzie z defaultem, dla widoku new/dodaj value = 'placeholder'
+                # pozwoli mi zarządzać także buttonami w zależności od potrzeb
             }
-
-        elif id == 2:  # tryb info
-            __contact_set['taste'] = 'INFO'  # poza buttonami 'zapisz', 'wróć' widok INFO będzie
-            # taki sam jak widoku edit. inputy będą 'readonly'. imho będzie łatwiej i spójniej
-            # ux-owo z innymi komponentami aplikacji
 
         return __contact_set
 
-    def set_contact_edit_view(self, id, type_view=''):  # id - by wyciągnąć konkretny kontakt, type_view pozwoli dobrać zestaw w zalezności od widoku
+    def set_contact_edit_view(self, id = 0, type_view = ''):
+
+        # id - by wyciągnąć konkretny kontakt, type_view pozwoli dobrać zestaw w zależności od widoku
+        # id = 0 podane zostanie tylko przy widoku add. wówczas nie będzie szukał rekordóœ w bazie
 
         """
         najpierw tworzę listę pustych łańcuchów. dzięki nim rozpoznam stany kategorii e-mail oraz telefonu. jeden
@@ -402,22 +323,23 @@ class EditContact(View):
         # poniżej html-ka z różnymi {}. dzięki atrybutom z metody set_contact_info, podmieniam części łańcuchów, np.
         #  na 'selected' w rozwijalnych listach lub 'readonly' dla inputów w widoku INFO.
         __html_start = f"""
-            <html><body><form style="margin-top: 100px; margin-left: 200px" action="/Edit/{id}" method="POST">
+            <html><body><form style="margin-top: 100px; margin-left: 200px" 
+            action="/Edit/{id}" method="POST">
                 <p><label {label_style}">
                   Imię:
-                  {input_style} width: 130px" type="text" name="user_name" value="{__contact_info['name']}" {type_view}>
+                  {input_style} width: 130px" type="text" name="user_name" {__contact_info['taste']}="{__contact_info['name']}" {type_view}>
                   Nazwisko:
                   {input_style} width: 250px" type="text" name="user_surname"
-                    {type_view}  value="{__contact_info['surname']}">
+                    {type_view}  {__contact_info['taste']}="{__contact_info['surname']}">
                 </label></p>   
             
                 <p><label {label_style}">
                   Opis:
                   {input_style} width: 487px" type="text" name="description"
-                    {type_view} value="{__contact_info['description']}">   
+                    {type_view} {__contact_info['taste']}="{__contact_info['description']}">   
                 </label></p>          
                 <p><label {label_style}">Telefon:
-                  {input_style} width: 295px;" type="tel" name="phone_number" value="{__contact_info['phone'][0]}" 
+                  {input_style} width: 295px;" type="tel" name="phone_number" {__contact_info['taste']}="{__contact_info['phone'][0]}" 
                   pattern="(\+(\d{1})*\d{1})*\s*\d{2,3}\s*\d{2,3}\s*\d{2,3}\s*\d{2,3}"  {type_view}>
                 </label>
                 <select {type_view}  style='width: 150px; padding: 6px 20px; margin: 0; border: 1px solid #bbb;
@@ -429,7 +351,7 @@ class EditContact(View):
                   <option value='secret' name="phone_cat_4" {__if_selected[3]}>{CATEGORIES[3][1]}</option>
                 </select></p>         
                 <p><label {label_style}">E-mail:
-                  {input_style} width: 310px;" type="email" name="user_email" value="{__contact_info['email'][0]}"  {type_view}>
+                  {input_style} width: 310px;" type="email" name="user_email" {__contact_info['taste']}="{__contact_info['email'][0]}"  {type_view}>
                 </label>
                 <select {type_view} style='width: 150px; padding: 6px 20px; margin: 0; border: 1px solid #bbb;
                     overflow: visible; font: 13px arial, helvetica, sans-serif;
@@ -443,18 +365,20 @@ class EditContact(View):
                      <p><label {label_style}">
                       Ulica:
                       {input_style} width: 267px" type="text" name="street" 
-                        value="{__contact_info['address'][0]}" {type_view}>
+                        {__contact_info['taste']}="{__contact_info['address'][0]}" {type_view}>
                       Numer:
                       {input_style} width: 38px" type="text" name="house_no"
                         {type_view} value="{__contact_info['address'][1]}">
+                        /
                       {input_style} width: 38px" type="text" name="flat_no" 
                         {type_view} value="{__contact_info['address'][2]}">
                     </label></p>
                     <p><label {label_style}">Kod
-                       {input_style} width: 82px;" type="text" name="zip" value="00-000" {type_view}> 
+                       {input_style} width: 82px;" type="text" name="zip" 
+                       {__contact_info['taste']} ="{__contact_info['address'][3]}" {type_view}> 
                     Miasto:
                       {input_style} width: 292px;" type="text" name="city" 
-                        value="{__contact_info['address'][3]}" {type_view}>     
+                        {__contact_info['taste']} ="{__contact_info['address'][4]}" {type_view}>     
                 </fieldset>                        
          """
         __html_group = f"""
@@ -463,11 +387,10 @@ class EditContact(View):
               {input_style} width: 465px;" type="text" name="user_group" {type_view} value="{groups_string}">
           </label> </p>       
         """
-        ContactList.confirmation_label = "Zapisz"
-        __html_end = f"""<p>{ContactList.button_save}</p></form></body></html>
+        __html_end = f"""<p style='width: 542px;'>{self.buttons}</p></form></body></html>
         """
-
         return __html_start + __html_group + __html_end  # przekazujemy gotowy html
+
     def get(self, request, id):
 
         return HttpResponse(self.set_contact_edit_view(id))
@@ -480,7 +403,7 @@ class EditContact(View):
             return HttpResponse("Zapisuj goscia")
         else:
 
-            return HttpResponse("Powrot")
+            return HttpResponse("Powrót")
 
 # jak lepije zapisac numer tel + id ownera,
 
@@ -504,17 +427,45 @@ class InfoContact(EditContact):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class NewContact(EditContact):
+class NewContact(EditContact, ContactList):
 
-    def get(self, request, id):
-        return HttpResponse(self.set_contact_edit_view(id))
+
+    def set_contact_info(self, id):
+        __contact_set = {}
+        groups = ""
+        __contact_set = {
+            # atrybuty modelu Person:
+            'name': "Wpisz imię...",
+            'surname': "Wpisz nazwisko...",
+            'description': "Wpisz opis...",
+            # atrybuty modelu PhoneNumber (tupla):
+            'phone': ("+48 800 000 000",  1),
+            # atrybuty modelu EmailAddress:
+            'email': ("jakub@nowak.pl",  1),
+            # atrybuty modelu Address:
+            'address': ("Wpisz ulicę...",
+                        "", "", "00-000", "Wpisz miasto"),
+            'groups': groups,
+            'taste' : "placeholder"
+        }
+
+        return __contact_set
+
+    def get(self, request):
+        button_save = """
+            <button class="button" type="submit" name="event" value="save">
+                Zapisz</button>
+            <button class="button" type="submit" name="event" value="back">
+                Wróć</button>
+        """
+        return HttpResponse(self.set_contact_edit_view())
 
     def post(self, request):
 
         button = self.request.POST.get("action")
 
         if self.request.POST.get("action") == 1:
-            return HttpResponse("Zapisuj goscia")
+            return HttpResponse("Zapisuj gościa")
         else:
 
-            return HttpResponse("Powrot")
+            return HttpResponse("Powrót")
