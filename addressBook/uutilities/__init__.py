@@ -3,7 +3,8 @@ button_save = f"""
         display: inline-block;                      
         zoom: 1;
         padding: 6px 20px;
-        margin: 0;
+        margin-left: 3px;
+        float: right;
         cursor: pointer;
         border: 1px solid #bbb;
         overflow: visible;
@@ -49,7 +50,8 @@ button_confirm = f"""
         display: inline-block;                      
         zoom: 1;
         padding: 6px 20px;
-        margin: 0;
+        margin-left: 3px;
+        float: right;
         cursor: pointer;
         border: 1px solid #bbb;
         overflow: visible;
@@ -97,6 +99,7 @@ button_back = f"""
         zoom: 1;
         padding: 6px 20px;
         margin: 0;
+        float: right;
         cursor: pointer;
         border: 1px solid #bbb;
         overflow: visible;

@@ -189,7 +189,7 @@ class ContactList(View):
             __delete = self.request.POST.get('delete')
             confirm_box = f"""       
                 <html><body><form action="" method="post">
-                  <div style='margin-top: 100px; margin-left: 200px;'>
+                  <div style='margin-top: 100px; margin-left: 200px; width: 260px;'>
                      <h3 style='font-familly: arial, san-serif; font-size: 22px; font-variant: small-caps;'>
                         Na pewno chcesz skasować?
                      </h3>
